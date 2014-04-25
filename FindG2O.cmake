@@ -10,12 +10,12 @@ pkg_check_modules(G2O QUIET libG2O)
 set(G2O_DEFINITIONS ${G2O_CFLAGS_OTHER})
 
 find_path(G2O_INCLUDE_DIR g2o/base_edge.h
-          HINTS /home/common/catkin_ws/src/g2o
+          HINTS /opt/ros/hydro/include/g2o
           PATH_SUFFIXES G2O )
 
 find_library(G2O_LIBRARY 
              NAMES G2O
-             HINTS /home/common/catkin_ws/src/g2o/lib )
+             HINTS /opt/ros/hydro/include/g2o )
 
 set(G2O_LIBRARIES ${G2O_LIBRARY} )
 set(G2O_INCLUDE_DIRS ${G2O_INCLUDE_DIR} )

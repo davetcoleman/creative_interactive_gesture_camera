@@ -1,75 +1,62 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(creative_interactive_gesture_camera)
 
-#set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "/home/common/catkin_ws/src/creative_interactive_gesture_camera/")
-## Find catkin macros and libraries
-## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
-## is used, also find other catkin packages
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/g2o/cmake_modules/")
-find_package(catkin REQUIRED COMPONENTS pcl_ros cv_bridge roscpp rospy std_msgs image_transport message_generation Eigen)
+message("-- Module Path: " ${CMAKE_MODULE_PATH})
+
+find_package(Eigen REQUIRED)
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/g2o/cmake_modules/")
 find_package(Cholmod REQUIRED)
-FIND_PACKAGE(MRPT REQUIRED base)
-message("-- MRPT FOUND: " ${MRPT_FOUND})
-message("-- MRPT_LIBRARIES: " ${MRPT_LIBRARIES}) 
+
+#find_package(MRPT REQUIRED base)
+#message("-- MRPT FOUND: " ${MRPT_FOUND})
+#message("-- MRPT_LIBRARIES: " ${MRPT_LIBRARIES})
+
 find_package(G2O REQUIRED)
 
-set(MY_LIB ${G2O_CORE_LIBRARY} 
-    ${G2O_STUFF_LIBRARY}
-    ${G2O_SOLVER_CHOLMOD}
-    ${G2O_SOLVER_CSPARSE}
-    ${G2O_SOLVER_CSPARSE_EXTENSION}
-    ${G2O_SOLVER_DENSE}
-    ${G2O_SOLVER_SLAM2D_LINEAR}
-    ${G2O_SOLVER_STRUCTURE_ONLY}
-    #${G2O_SOLVER_EIGEN}
-    ${G2O_TYPES_DATA}
-    ${G2O_TYPES_ICP}
-    ${G2O_TYPES_SBA}
-    ${G2O_TYPES_SCLAM2D}
-    ${G2O_TYPES_SIM3}
-    ${G2O_TYPES_SLAM2D}
-    ${G2O_TYPES_SLAM3D}
-    ${CHOLMOD_LIBRARIES}  
-    ${MRPT_LIBRARIES}
-    )
+set(MY_LIB ${G2O_CORE_LIBRARY}
+  ${G2O_STUFF_LIBRARY}
+  ${G2O_SOLVER_CHOLMOD}
+  ${G2O_SOLVER_CSPARSE}
+  ${G2O_SOLVER_CSPARSE_EXTENSION}
+  ${G2O_SOLVER_DENSE}
+  ${G2O_SOLVER_SLAM2D_LINEAR}
+  ${G2O_SOLVER_STRUCTURE_ONLY}
+  #${G2O_SOLVER_EIGEN}
+  ${G2O_TYPES_DATA}
+  ${G2O_TYPES_ICP}
+  ${G2O_TYPES_SBA}
+  ${G2O_TYPES_SCLAM2D}
+  ${G2O_TYPES_SIM3}
+  ${G2O_TYPES_SLAM2D}
+  ${G2O_TYPES_SLAM3D}
+  ${CHOLMOD_LIBRARIES}
+#  ${MRPT_LIBRARIES}
+  )
 
-## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
+find_package(catkin REQUIRED COMPONENTS
+  pcl_ros
+  cv_bridge
+  roscpp
+  rospy
+  std_msgs
+  image_transport
+  message_generation
+  )
 
-## Uncomment this if the package has a setup.py. This macro ensures
-## modules and global scripts declared therein get installed
-## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
-# catkin_python_setup()
-
-#######################################
-## Declare ROS messages and services ##
-#######################################
-
-## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
- add_message_files(
+add_message_files(
   FILES
   floatTest.msg
   Point2D.msg
   Mapping2D.msg
- )
-
-## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   Service1.srv
-#   Service2.srv
-# )
+  )
 
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
-   DEPENDENCIES
-   std_msgs
-)
+  DEPENDENCIES
+  std_msgs
+  )
 
 ###################################
 ## catkin specific configuration ##
@@ -84,8 +71,8 @@ catkin_package(
   INCLUDE_DIRS include
   LIBRARIES creative_interactive_gesture_camera
   CATKIN_DEPENDS pcl_ros roscpp rospy std_msgs message_runtime
-#  DEPENDS system_lib
-)
+  #  DEPENDS system_lib
+  )
 ###########
 ## Build ##
 ###########
@@ -100,7 +87,7 @@ catkin_package(
 #LINK_DIRECTORIES(${G2O_LIB})
 
 #INCLUDE_DIRECTORIES(${CSPARSE_INCLUDE_DIR}) #You can use CPARSE or CHOLMOD
-#INCLUDE_DIRECTORIES(${CHOLMOD_INCLUDE_DIR}) 
+#INCLUDE_DIRECTORIES(${CHOLMOD_INCLUDE_DIR})
 
 #set(G2O_DIR ${G2O_INCLUDE}/g2o)
 #include_directories(${G2O_DIR})
@@ -110,14 +97,14 @@ catkin_package(
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
-)
+  )
 
 
-file(WRITE "test.txt" ${MRPT_INCLUDE_DIRS})
+#file(WRITE "test.txt" ${MRPT_INCLUDE_DIRS})
 
 include_directories(/opt/softkinetic/DepthSenseSDK/include)
 include_directories(/usr/include/suitesparse)
-include_directories(${MRPT_INCLUDE_DIRS})
+#include_directories(${MRPT_INCLUDE_DIRS})
 include_directories(${CMAKE_SOURCE_DIR}/g2o/g2o/core)
 include_directories(${CMAKE_SOURCE_DIR}/g2o/g2o/stuff)
 include_directories(${CMAKE_SOURCE_DIR}/g2o/g2o/examples)
@@ -150,21 +137,21 @@ add_executable(main src/main.cpp src/Sensor.cpp)
 target_link_libraries(main DepthSense  ${catkin_LIBRARIES})
 add_dependencies(main beginner_tutorials_generate_message_cpp)
 
-add_executable(SLAM src/SLAM.cpp 
-                     src/poseEstimate.cpp 
-                     src/GraphOptimizer_G2O.cpp 
-                     src/PointCloudDownsampler.cpp
-                     src/FrameRGBD
-                     src/KeyframeLoopDetector.cpp
-                     src/Miscellaneous.cpp
-                     src/VisualFeatureMatcher_Generic.cpp
-                     src/Visual3DRigidTransformationEstimator_RANSAC.cpp
-                     src/ICPPoseRefiner_PCL.cpp)#
+add_executable(SLAM src/SLAM.cpp
+  src/poseEstimate.cpp
+  src/GraphOptimizer_G2O.cpp
+  src/PointCloudDownsampler.cpp
+  src/FrameRGBD
+  src/KeyframeLoopDetector.cpp
+  src/Miscellaneous.cpp
+  src/VisualFeatureMatcher_Generic.cpp
+  src/Visual3DRigidTransformationEstimator_RANSAC.cpp
+  src/ICPPoseRefiner_PCL.cpp)#
 target_link_libraries(SLAM DepthSense ${MY_LIB} ${catkin_LIBRARIES})
 add_dependencies(SLAM beginner_tutorials_generate_message_cpp)
 
 #add_executable(pairwiseAlignment src/pairwiseAlignment.cpp
-#                                 src/GraphOptimizer_G2O.cpp 
+#                                 src/GraphOptimizer_G2O.cpp
 #                                 src/PointCloudDownsampler.cpp
 #                                 src/FrameRGBD
 #                                 src/KeyframeLoopDetector.cpp
@@ -174,7 +161,7 @@ add_dependencies(SLAM beginner_tutorials_generate_message_cpp)
 #                                 src/ICPPoseRefiner_PCL.cpp)
 #target_link_libraries(pairwiseAlignment DepthSense ${MY_LIB} ${catkin_LIBRARIES})
 #add_dependencies(pairwiseAlignment beginner_tutorials_generate_message_cpp)
-                                 
+
 
 #add_executable(find_keypoints  src/find_keypoints.cpp)
 #target_link_libraries(find_keypoints ${catkin_LIBRARIES})
